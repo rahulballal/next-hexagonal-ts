@@ -1,0 +1,12 @@
+{
+  "chores": [
+    {
+      "_id": "initialised",
+      "title": "sample chore",
+      "createdAt": "2022-01-22",
+      "updatedAt": "2022-01-23",
+      "status": 2,
+      "auditTrail": []
+    }
+  ]
+}
