@@ -38,8 +38,8 @@ export const convertToDbStatus = (domStatus: ChoreStatus) => {
 
 export const convertToDomainChore = (dbChore: IChoreSchema): IChore => ({
     choreId: dbChore._id,
-    createdAt: dbChore.createdAt,
-    status: convertToDomainStatus(dbChore.status, dbChore.updatedAt),
+    createdAt: new Date(dbChore.createdAt as string),
+    status: convertToDomainStatus(dbChore.status, new Date(dbChore.updatedAt as string)),
     title: dbChore.title,
-    updatedAt: dbChore.updatedAt
+    updatedAt: new Date(dbChore.updatedAt as string)
 })

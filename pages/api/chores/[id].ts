@@ -4,7 +4,7 @@ import { SingleChore } from "../../../backend/api.types";
 import { ChoreService } from "../../../backend/core";
 import { UpdateChoreCommand } from "../../../backend/domain.types";
 
-export default function handleGetChoreById(
+export default async function handleGetChoreById(
   req: NextApiRequest,
   res: NextApiResponse<SingleChore>
 ) {
@@ -14,14 +14,14 @@ export default function handleGetChoreById(
   const postBody = req.body;
   switch (httpMethod) {
     case "GET": {
-      const result = choreSvc.getChoreById(id as String);
+      const result = await choreSvc.getChoreById(id as String);
       if (result === "ID_NOT_FOUND") return res.status(404).end();
       return res.status(200).json({ data: result });
     }
     case "PUT": {
       const posted = postBody as Omit<UpdateChoreCommand, "choreId">;
       const command: UpdateChoreCommand = { choreId: id, ...posted };
-      const result = choreSvc.updateChore(command);
+      const result = await choreSvc.updateChore(command);
       if (result === "ID_NOT_FOUND") return res.status(404).end();
       return res.status(200).json({ data: result });
     }

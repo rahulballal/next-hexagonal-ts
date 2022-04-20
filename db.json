@@ -1,0 +1,12 @@
+{
+    "chores": [
+        {
+            "_id": "ba4f8d3d-d29d-43a5-9074-3ccff3738388",
+            "auditTrail": [],
+            "createdAt": "2022-01-20T00:25:19.435Z",
+            "status": 0,
+            "title": "Remember the milk",
+            "updatedAt": "2022-04-20T00:25:19.435Z"
+        }
+    ]
+}

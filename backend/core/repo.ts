@@ -1,81 +1,66 @@
+import { map } from "lodash/fp";
 import uuid from "uuid";
-import {
-  DbChoreStatus,
-  IChoreSchema,
-getDb,  IData,
-} from "../infrastructure";
-import { IChoreRepo } from "../repo.types";
-import { find, getOr, map } from "lodash/fp";
 import { IChore } from "../domain.types";
+import type {
+  IChoreSchema,
+  IChoresGateway
+} from "../infrastructure";
+import { choresGateway, DbChoreStatus } from "../infrastructure";
+import { IChoreRepo } from "../repo.types";
 import {
   convertToDbStatus,
-  convertToDomainChore,
-  convertToDomainStatus,
+  convertToDomainChore
 } from "./transforms";
 
-const makeChoreRepo = (db: IData): IChoreRepo => {
-  const getChores = () => getOr([], "chores", db);
-  const findById = (choreId: String) => {
-    const chores = getChores();
-    const dbChore: IChoreSchema | undefined = find({ _id: choreId }, chores);
-    return dbChore;
-  };
+const makeChoreRepo = (gateway: IChoresGateway): IChoreRepo => {
   return {
-    all: () => {
-      const chores = getChores();
+    all: async () => {
+      const chores = await gateway.getAll();
       const result: IChore[] = map(convertToDomainChore, chores);
       return result;
     },
-    byId: (choreId) => {
-      const dbChore = findById(choreId);
-      if (dbChore) {
-        return {
-          choreId: dbChore._id,
-          createdAt: dbChore.createdAt,
-          status: convertToDomainStatus(dbChore.status, dbChore.createdAt),
-          title: dbChore.title,
-          updatedAt: dbChore.updatedAt,
-        };
+    byId: async (choreId) => {
+      try {
+        const dbChore = await gateway.getOne(choreId);
+        const result = convertToDomainChore(dbChore)
+        return result
+      } catch(e) {
+        return 'ID_NOT_FOUND'
       }
-      return "ID_NOT_FOUND";
     },
-    insert: (newChore) => {
+    insert: async (newChore) => {
       const dbChore: IChoreSchema = {
         _id: uuid.v4().toString(),
-        updatedAt: new Date(),
-        createdAt: new Date(),
+        updatedAt: (new Date()).toString(),
+        createdAt: (new Date()).toString(),
         status: DbChoreStatus.TODO,
         title: newChore.title,
         auditTrail: [],
       };
-
-      db.chores.push(dbChore);
+      await gateway.create(dbChore)
       return convertToDomainChore(dbChore);
     },
-    update: (update) => {
-      const found = findById(update.choreId);
-      if (!found) return "ID_NOT_FOUND";
-      const status = convertToDbStatus(update.status);
-      found.auditTrail.push({ title: found.title, status, dt: new Date() });
-      const dbChore: IChoreSchema = {
-        _id: found._id,
-        updatedAt: new Date(),
-        createdAt: found.createdAt,
-        status,
-        title: update.title,
-        auditTrail: found.auditTrail,
-      };
-      if (db.chores) {
-        db.chores = map((chore) => {
-          if (chore._id === update.choreId) return dbChore;
-          return chore;
-        }, db.chores);
-      } else {
-        db.chores = [dbChore] ;
+    update: async (update) => {
+      try {
+        const found = await gateway.getOne(update.choreId)
+        const status = convertToDbStatus(update.status);
+        found.auditTrail.push({ title: found.title, status, dt: new Date() });
+        const dbChore: IChoreSchema = {
+          _id: found._id,
+          updatedAt: (new Date()).toString(),
+          createdAt: found.createdAt,
+          status,
+          title: update.title,
+          auditTrail: found.auditTrail,
+        };
+        await gateway.update(dbChore)
+        const result = convertToDomainChore(dbChore)
+        return result
+      }catch (e) {
+        return 'ID_NOT_FOUND'
       }
-      return convertToDomainChore(dbChore);
     },
   };
 };
 
-export const choreRepo: IChoreRepo = makeChoreRepo(getDb());
+export const choreRepo: IChoreRepo = makeChoreRepo(choresGateway);
