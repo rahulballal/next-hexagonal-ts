@@ -1,7 +1,7 @@
 {
     "chores": [
         {
-            "_id": "ba4f8d3d-d29d-43a5-9074-3ccff3738388",
+            "id": 1650420171232,
             "auditTrail": [],
             "createdAt": "2022-01-20T00:25:19.435Z",
             "status": 0,

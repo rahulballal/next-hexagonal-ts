@@ -5,7 +5,7 @@ export enum DbChoreStatus {
   COMPLETE,
 }
 export interface IChoreSchema {
-  _id: String;
+  id: Number;
   title: String;
   status: DbChoreStatus;
   createdAt: String;
@@ -15,7 +15,7 @@ export interface IChoreSchema {
 
 export interface IChoresGateway {
   getAll: () => Promise<IChoreSchema[]>
-  getOne: (choreId: String) => Promise<IChoreSchema>
+  getOne: (choreId: Number) => Promise<IChoreSchema>
   create: (chore: IChoreSchema) => Promise<void>
   update: (chore: IChoreSchema) => Promise<void>
 }
@@ -28,7 +28,7 @@ class ChoresDbGateway implements IChoresGateway {
     return response;
   }
 
-  async getOne(choreId: String): Promise<IChoreSchema> {
+  async getOne(choreId: Number): Promise<IChoreSchema> {
     const response: IChoreSchema = await got
       .get(this.dbUrl + "/" + choreId)
       .json();
@@ -41,7 +41,7 @@ class ChoresDbGateway implements IChoresGateway {
 
   async update(updatedChore: IChoreSchema): Promise<void> {
     await got
-      .put(this.dbUrl + "/" + updatedChore._id, {
+      .put(this.dbUrl + "/" + updatedChore.id, {
         body: JSON.stringify(updatedChore),
       })
       .json();

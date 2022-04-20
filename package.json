@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
-    "prestart": "yarn run db",
     "start": "next start",
     "lint": "next lint",
     "db": "json-server -w db.json -p 5000"

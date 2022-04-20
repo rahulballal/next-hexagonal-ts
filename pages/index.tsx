@@ -28,17 +28,23 @@ const Home: NextPage = () => {
           spacing={4}
           align="stretch"
         >
-          <Box bg="gray.100">
+          <Box border={"1px"} padding={"5px"}>
             <AddChore />
           </Box>
-          <Box h="40px" bg="yellow.200">
-            <Text fontSize={"large"}>TO-DO</Text>
+          <Box h="40px" bg="blue.100">
+            <Text fontSize={"large"} fontWeight="bold">
+              TO-DO
+            </Text>
           </Box>
-          <Box h="40px" bg="tomato">
-            DOING
+          <Box h="40px" bg="red.50">
+            <Text fontSize={"large"} fontWeight="bold">
+              DOING
+            </Text>
           </Box>
-          <Box h="40px" bg="pink.100">
-            COMPLETE
+          <Box h="40px" bg="green.100">
+            <Text fontSize={"large"} fontWeight="bold">
+              DONE
+            </Text>
           </Box>
         </VStack>
       </Container>

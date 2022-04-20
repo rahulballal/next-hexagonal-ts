@@ -5,8 +5,7 @@ export function AddChore() {
     const [choreTitle, setChoreTitle] = React.useState("");
     return (
       <>
-        <FormControl>
-          <FormLabel htmlFor="choreTitle">Add Chore</FormLabel>
+        <FormControl>          
           <Input
             id="choreTitle"
             onChange={(e) => {
@@ -15,7 +14,8 @@ export function AddChore() {
             value={choreTitle}
           />
         </FormControl>
-        <Button colorScheme="cyan">Add</Button>
+        <br/>
+        <Button colorScheme="cyan">Add Chore</Button>
       </>
     );
 }

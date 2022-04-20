@@ -19,3 +19,4 @@ export type CreateChoreCommand = Pick<IChore, 'title'>
 export type UpdateChoreCommand = Pick<IChore, 'choreId' | 'title' | 'status'>
 
 export type ID_NOT_FOUND = 'ID_NOT_FOUND'
+export type DUPLICATE_CHORE = 'DUPLICATE_CHORE'

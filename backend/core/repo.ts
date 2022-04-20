@@ -1,4 +1,4 @@
-import { map } from "lodash/fp";
+import { map, toNumber } from "lodash/fp";
 import uuid from "uuid";
 import { IChore } from "../domain.types";
 import type {
@@ -21,16 +21,17 @@ const makeChoreRepo = (gateway: IChoresGateway): IChoreRepo => {
     },
     byId: async (choreId) => {
       try {
-        const dbChore = await gateway.getOne(choreId);
+        const dbChore = await gateway.getOne(toNumber(choreId));
         const result = convertToDomainChore(dbChore)
         return result
       } catch(e) {
+        console.error(e)
         return 'ID_NOT_FOUND'
       }
     },
     insert: async (newChore) => {
       const dbChore: IChoreSchema = {
-        _id: uuid.v4().toString(),
+        id: Date.now().valueOf(),
         updatedAt: (new Date()).toString(),
         createdAt: (new Date()).toString(),
         status: DbChoreStatus.TODO,
@@ -42,11 +43,11 @@ const makeChoreRepo = (gateway: IChoresGateway): IChoreRepo => {
     },
     update: async (update) => {
       try {
-        const found = await gateway.getOne(update.choreId)
+        const found = await gateway.getOne(toNumber(update.choreId))
         const status = convertToDbStatus(update.status);
         found.auditTrail.push({ title: found.title, status, dt: new Date() });
         const dbChore: IChoreSchema = {
-          _id: found._id,
+          id: found.id,
           updatedAt: (new Date()).toString(),
           createdAt: found.createdAt,
           status,
@@ -57,6 +58,7 @@ const makeChoreRepo = (gateway: IChoresGateway): IChoreRepo => {
         const result = convertToDomainChore(dbChore)
         return result
       }catch (e) {
+        console.error(e)
         return 'ID_NOT_FOUND'
       }
     },
