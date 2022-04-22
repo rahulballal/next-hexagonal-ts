@@ -23,9 +23,7 @@ export interface IChore {
 }
 
 export interface ServerResponse {
-    data: {
-        chores: IChore[]
-    }
+    data: IChore[]
 }
 
 const getTodoChores = filter<IChore>({status: 'TODO'})
@@ -36,12 +34,18 @@ const getDoingOrOverdueChores = filter<IChore>((chore: IChore) => {
 
 const Home: NextPage = () => {
     const [chores, setChores] = useState<Array<IChore>>([])
-    const {get, loading, post, put} = useFetch('http://localhost:3000/api/chores')
+    const {get, loading, post, put, response} = useFetch('http://localhost:3000/api/chores')
     const addChore = useCallback(async (newChore: any) => post(newChore), [])
     const updateChore = useCallback(async (choreId: string, updatedChore: any) => put(`/${choreId}`, updatedChore), [])
     const getChores = useCallback(async () => get(), [])
     useEffect(() => {
-        getChores().then((resp: ServerResponse) => setChores(resp.data.chores))
+        async function init() {
+            const { data }: ServerResponse = await getChores()
+            if(response.ok){
+                setChores(data)
+            }
+        }
+        init()
     }, [])
 
     if (loading) return <Text color={"purple.300"}>Loading....</Text>
@@ -64,25 +68,26 @@ const Home: NextPage = () => {
                     <Box border={"1px"} padding={"5px"}>
                         <AddChore onAdd={addChore}/>
                     </Box>
-                    <Box h="40px" bg="blue.100">
+                    <Box bg="blue.100">
                         <Text fontSize={"large"} fontWeight="bold">
                             TO-DO
                         </Text>
                         <TodoChores chores={getTodoChores(chores)} updateChore={updateChore}/>
                     </Box>
-                    <Box h="40px" bg="red.50">
+                    <Box bg="red.50">
                         <Text fontSize={"large"} fontWeight="bold">
                             DOING
                         </Text>
                         <DoingChores chores={getDoingOrOverdueChores(chores)} updateChore={updateChore}/>
                     </Box>
-                    <Box h="40px" bg="green.100">
+                    <Box bg="green.100">
                         <Text fontSize={"large"} fontWeight="bold">
                             DONE
                         </Text>
                         <CompleteChores chores={getCompleteChores(chores)}/>
                     </Box>
                 </VStack>
+
             </Container>
         </React.Fragment>
     );

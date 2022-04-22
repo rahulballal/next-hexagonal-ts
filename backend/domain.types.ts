@@ -12,7 +12,7 @@ export interface IChoreAuditTrail {
     _id: IChore["choreId"]
     title: IChore["title"]
     status: IChore["status"]
-    changeDate: Date
+    dt: Date
 }
 
 export type CreateChoreCommand = Pick<IChore, 'title'>
